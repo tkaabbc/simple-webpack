@@ -23,7 +23,7 @@ export default `hello ${name}!`;
 export const name = 'world';
 ```
 ``` 
-//bundler.js 
+//webpack.js 
 // 读取文件信息，并获得当前js文件的依赖关系
 function createAsset(filename) {//代码略}
 // 从入口开始分析所有依赖项，形成依赖图，采用广度遍历
@@ -33,7 +33,7 @@ function bundle(graph) {//代码略}
 ```
 `entry.js` 就是我们的入口文件，文件的依赖关系是，`entry.js`依赖`message.js`，`message.js`依赖`name.js`。
 
-`bundler.js` 是我们简易版的webpack
+`webpack.js` 是我们简易版的webpack
 
 
 目录结构
@@ -42,7 +42,7 @@ function bundle(graph) {//代码略}
     - entry.js
     - message.js
     - name.js
-- bundler.js
+- webpack.js
 ```
 
 ### 如何分析依赖
@@ -71,7 +71,7 @@ createAsset("./example/entry.js");
 
 
 ### 源码
-[点击查看源码](https://github.com/tkaabbc/simple-webpack/blob/master/bundler.js)
+[点击查看源码](https://github.com/tkaabbc/simple-webpack/blob/master/webpack.js)
 ## 最后
 文章可能有不足的地方，请大家见谅，如果有什么疑问可以下方留言讨论。
 
