@@ -1,6 +1,6 @@
 const fs = require("fs");
 const path = require("path");
-const babylon = require("@babel/parser");
+const parser = require("@babel/parser");
 const traverse = require("@babel/traverse").default;
 const babel = require("@babel/core");
 
@@ -10,9 +10,9 @@ function createAsset(filename) {
   //获取文件，返回值是字符串
   const content = fs.readFileSync(filename, "utf-8");
 
-  //讲字符串为ast（抽象语法树， 这个是编译原理的知识，说得简单一点就是，可以把js文件里的代码抽象成一个对象，代码的信息会存在对象中）
-  //babylon 这个工具是是负责解析字符串并生产ast。
-  const ast = babylon.parse(content, {
+  //将字符串转为ast（抽象语法树， 这个是编译原理的知识，说得简单一点就是，可以把js文件里的代码抽象成一个对象，代码的信息会存在对象中）
+  //parser 这个工具是是负责解析字符串并生产ast。
+  const ast = parser.parse(content, {
     sourceType: "module"
   });
 
@@ -34,6 +34,7 @@ function createAsset(filename) {
   const id = ID++;
 
   //这边主要把ES6 的代码转成 ES5
+  // 通过babel 的转换，es6 的模块系统最终还是会转换成 commonjs 的规范。
   const { code } = babel.transformFromAstSync(ast, null, {
     presets: ["@babel/preset-env"]
   });
@@ -90,7 +91,7 @@ function bundle(graph) {
     ],`;
   });
 
-  //require, module, exports 是 cjs的标准不能再浏览器中直接使用，所以这里模拟cjs模块加载，执行，导出操作。
+  // 模拟commonjs模块加载，执行，导出操作 (相当于__webpack_require__)。
   const result = `
     (function(modules){
       //创建require函数， 它接受一个模块ID（这个模块id是数字0，1，2） ，它会在我们上面定义 modules 中找到对应是模块.
@@ -113,7 +114,8 @@ function bundle(graph) {
   return result;
 }
 
-const graph = createGraph("./example2/module1.js");
+const graph = createGraph("./example1/entry.js");
+// const graph = createGraph("./example2/module1.js");
 const ret = bundle(graph);
 
 // 打包生成文件
